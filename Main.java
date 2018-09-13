@@ -4,40 +4,51 @@ import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
-        int[] a = {5, 2, 4, 6, 1, 3, 2, 6};
-        SortUnsorted(a, 0, 7);
-        System.out.println(Arrays.toString(a));
+        int[] array = {5, 2, 4, 6, 1, 3, 2, 6};
+        try{
+            sort(array, 0, array.length);
+        } catch (ArrayIndexOutOfBoundsException e){
+
+        }
+        System.out.println(Arrays.toString(array));
     }
 
-    public static void SortUnsorted(int[] a, int low, int high) {
-
-        if (high <= low)                    // Делим рекурсивно массив.
+    private static void sort(int[] array, int low, int high) {
+        if (low >= high-1)
             return;
-        int mid = low + (high - low) / 2;
-        SortUnsorted(a, low, mid);
-        SortUnsorted(a, mid + 1, high);
 
-        int[] buffer = Arrays.copyOf(a, a.length); // Добавляем элементы во временный массив.
+        int middle = low + (high - low)/2;
 
-        for (int k = low; k <= high; k++) // Сравниваем временный массив и оригинальный, а также производим сортировку.
-            buffer[k] = a[k];
+        sort(array, low, middle);
+        sort(array, middle, high);
+        merge(array, low, middle, high);
+    }
 
-        int i = low, j = mid + 1;
-        for (int k = low; k <= high; k++) {
+    private static void merge(int[] array, int low, int middle, int high) {
+        int[] capacity = new int[high - low];
 
-            if (i > mid) {
-                a[k] = buffer[j];
-                j++;
-            } else if (j > high) {
-                a[k] = buffer[i];
-                i++;
-            } else if (buffer[j] < buffer[i]) {
-                a[k] = buffer[j];
-                j++;
-            } else {
-                a[k] = buffer[i];
-                i++;
+        int currentIndex = 0;
+
+        for (int i = low, k = middle; i < middle || k < high; ) {
+            if (i == middle) {
+                while (k < high)
+                    capacity[currentIndex++] = array[k++];
+                break;
             }
+
+            if (k == high) {
+                while (i < middle)
+                    capacity[currentIndex++] = array[i++];
+                break;
+            }
+
+            if (array[i] < array[k])
+                capacity[currentIndex++] = array[i++];
+            else
+                capacity[currentIndex++] = array[k++];
         }
+
+        for (int i = low, c = 0; i < high && c < capacity.length; i++, c++)
+            array[i] = capacity[c];
     }
 }
